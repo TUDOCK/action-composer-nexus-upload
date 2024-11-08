@@ -78,16 +78,15 @@ function curlPutFile($url, $filename, $username, $password) {
 
     $result = curl_exec($ch);
 
-    $lines = explode("\n", $result);
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     curl_close($ch);
 
     if ($statusCode !== 200) {
         throw new Exception("Failed to PUT file with response code $statusCode - '$result'");
+    } else {
+        return true;
     }
-    
-    return trim($lines[0]) === 'HTTP/2 200';
 }
 
 /**
@@ -268,6 +267,7 @@ if (filesize($zipFileName) === 0) {
 $success = curlPutFile($url, $zipFileName, $username, $password);
 if (!$success) {
     echo "Failed to upload zip to repository\n";
+    echo "Please note that this may be a false error and check if the file has been uploaded to Nexus anyway.\n";
     exit(1);
 } else {
     echo "Finished\n";
